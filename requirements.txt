@@ -1,0 +1,9 @@
+pydantic
+aiohttp
+youtube_dl
+aiofiles
+feedparser
+nb-cli
+nonebot-adapter-cqhttp
+nonebot-plugin-status
+nonebot-plugin-apscheduler
