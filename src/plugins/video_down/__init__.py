@@ -27,5 +27,6 @@ def check_proxy(url: str = "") -> str:
             return ""
 
 
+nonebot.plugin.load_plugin("src.plugins.video_down.configer")
 nonebot.plugin.load_plugin("src.plugins.video_down.getter")
-nonebot.plugin.load_plugin("src.plugins.video_down.rss")
+
