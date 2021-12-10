@@ -7,11 +7,9 @@ from pydantic import BaseSettings
 
 
 class Config(BaseSettings):
-    # Your Config Here
-    video_proxy: str = ""
-    video_info_group: int = 0
-    video_info_qq: int = 0
-    video_bot_qq: int = 0
+    # 配置文件
+    video_proxy: str = ""  # http代理(ip:port)
+    video_config_file: str = ""  # 下载配置文件
 
     class Config:
         extra = "ignore"
