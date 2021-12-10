@@ -9,7 +9,6 @@ from typing import List
 
 class Config(BaseSettings):
     # Your Config Here
-    you_rss_channel_list: List[str] = []
 
     class Config:
         extra = "ignore"

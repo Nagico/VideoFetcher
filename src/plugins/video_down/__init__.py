@@ -27,10 +27,5 @@ def check_proxy(url: str = "") -> str:
             return ""
 
 
-export.info_group = status_config.video_info_group
-export.info_qq = status_config.video_info_qq
-export.bot_qq = status_config.video_bot_qq
-
-
 nonebot.plugin.load_plugin("src.plugins.video_down.getter")
 nonebot.plugin.load_plugin("src.plugins.video_down.rss")

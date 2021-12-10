@@ -13,10 +13,10 @@ from .config import Config
 import os
 
 global_config = get_driver().config
-status_config = Config(**global_config.dict())
+status_config = Config(**global_config.dict())  # 获取nonebot配置
 
-you_get = on_command("down", priority=3)
-get_status = on_command("down status", priority=2)
+you_get = on_command("down", priority=3)  # 下载命令
+get_status = on_command("down list", priority=2)  # 查看下载状态命令
 
 status_config.video_get_getter_status = {}
 
