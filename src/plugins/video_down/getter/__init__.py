@@ -152,7 +152,7 @@ async def _upload_video_task(down_event: DownEvent) -> None:
     """
     try:
         down_event.details = 'uploading video'
-        folder_id = await down_event.bot.get_folder_id(down_event.file_path)
+        folder_id = await down_event.get_folder_id(down_event.file_path)
         if folder_id == '':  # 根目录
             await down_event.bot.call_api(
                 "upload_group_file",
@@ -163,9 +163,9 @@ async def _upload_video_task(down_event: DownEvent) -> None:
             await down_event.bot.call_api(
                 "upload_group_file",
                 group_id=down_event.group_id,
-                folder=folder_id,
                 file=os.path.abspath(down_event.file_name),
-                name=down_event.file_name)
+                name=down_event.file_name,
+                folder=folder_id)
 
     except nonebot.exception.FinishedException:
         raise nonebot.exception.FinishedException
@@ -186,7 +186,7 @@ async def _upload_cover_task(down_event: DownEvent):
     try:
         if down_event.cover_name is not None:  # 封面存在
             down_event.details = 'uploading cover'
-            folder_id = await down_event.bot.get_folder_id(down_event.cover_path)
+            folder_id = await down_event.get_folder_id(down_event.cover_path)
 
             if folder_id == '':  # 根目录
                 await down_event.bot.call_api(
@@ -236,7 +236,7 @@ async def inform(down_event: DownEvent, result: str):
 async def handle_status(bot: Bot, event: Event, state: T_State):
     result = ""
     if event.message_type == 'group':
-        for key, value in status_config.video_get_getter_status.items():
+        for key, value in DownEvent.event_list.items():
             if value is not None and value.group_id == event.group_id:
                 result += (f'[{value.title}]\n'
                            f'{value.details}\n\n')

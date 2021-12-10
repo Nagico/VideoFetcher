@@ -146,6 +146,8 @@ class DownEvent(object):
     """
     下载任务事件信息
     """
+    event_list = {}
+
     def __init__(self, bot: Bot, event: Event, state: T_State, configer: Configer):
         status_config.video_get_getter_cnt += 1
         self.id = status_config.video_get_getter_cnt
@@ -175,7 +177,7 @@ class DownEvent(object):
         self.create_time = time()
         self.finish_time = None
 
-        status_config.video_get_getter_status.update({self.id: self})  # 在列表中添加信息
+        DownEvent.event_list[self.id] = self  # 在列表中添加信息
 
     async def get_folder_id(self, path: str) -> str:
         if path == '':
@@ -210,7 +212,7 @@ class DownEvent(object):
     #                 return self.get_sub_folder_id(path_list[1:], folder['id'])
 
     def __del__(self):
-        status_config.video_get_getter_status.pop(self.id)  # 在dict中删除信息
+        DownEvent.event_list.pop(self.id)  # 在dict中删除信息
         if self.you_getter:
             del self.you_getter
 
