@@ -147,10 +147,11 @@ class DownEvent(object):
     下载任务事件信息
     """
     event_list = {}
+    event_cnt = 0
 
     def __init__(self, bot: Bot, event: Event, state: T_State, configer: Configer):
-        status_config.video_get_getter_cnt += 1
-        self.id = status_config.video_get_getter_cnt
+        DownEvent.event_cnt += 1
+        self.id = DownEvent.event_cnt
         self.bot = bot
         self.event = event
         self.state = state

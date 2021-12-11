@@ -22,9 +22,6 @@ down_command = on_command("down", priority=4)  # 下载命令
 down_list_command = on_command("down list", priority=3)  # 查看下载状态命令
 down_help_command = on_command("down help", priority=3)  # 查看下载状态命令
 
-status_config.video_get_getter_status = {}  # 初始化下载状态
-status_config.video_get_getter_cnt = 0  # 初始化下载任务数量
-
 export = nonebot.plugin.export()  # 导出插件
 video_get = nonebot.plugin.require('src.plugins.video_down')  # 获取插件
 configer = nonebot.plugin.require('src.plugins.video_down.configer').configer  # 获取配置插件
@@ -242,7 +239,7 @@ async def handle_status(bot: Bot, event: Event, state: T_State):
                 result += (f'[{value.title}]\n'
                            f'{value.details}\n\n')
     else:
-        for key, value in status_config.video_get_getter_status.items():
+        for key, value in DownEvent.event_list.items():
             if value is not None:
                 result += (f'[{value.group_id}-{value.title}]\n'
                            f'{value.details}\n\n')
