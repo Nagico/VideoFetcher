@@ -18,8 +18,9 @@ from ..exception import InfoException, DownloadException, UploadException
 global_config = get_driver().config
 status_config = Config(**global_config.dict())  # 获取nonebot配置
 
-you_get = on_command("down", priority=3)  # 下载命令
-get_status = on_command("down list", priority=2)  # 查看下载状态命令
+down_command = on_command("down", priority=4)  # 下载命令
+down_list_command = on_command("down list", priority=3)  # 查看下载状态命令
+down_help_command = on_command("down help", priority=3)  # 查看下载状态命令
 
 status_config.video_get_getter_status = {}  # 初始化下载状态
 status_config.video_get_getter_cnt = 0  # 初始化下载任务数量
@@ -29,7 +30,7 @@ video_get = nonebot.plugin.require('src.plugins.video_down')  # 获取插件
 configer = nonebot.plugin.require('src.plugins.video_down.configer').configer  # 获取配置插件
 
 
-@you_get.handle()
+@down_command.handle()
 async def handle_download(bot: Bot, event: Event, state: T_State):
     """
     处理下载任务
@@ -39,13 +40,13 @@ async def handle_download(bot: Bot, event: Event, state: T_State):
         state["url"] = args
         url = state["url"]
     else:
-        await you_get.finish(f'please input "/down [url]"')
+        await down_command.finish(f'please input "/down [url]"')
     result = validators.url(url)
     if result is not True:
         url = 'https://' + url  # 自动添加协议头
         result = validators.url(url)
         if result is not True:
-            await you_get.finish(f'{url} is not a valid url')
+            await down_command.finish(f'{url} is not a valid url')
     down_event = DownEvent(bot, event, state, configer)
     await down_video(down_event)
     pass
@@ -229,10 +230,10 @@ async def inform(down_event: DownEvent, result: str):
                 f'[CQ:at,qq={down_event.user_id}]'
     )
     del down_event
-    await you_get.finish()
+    await down_command.finish()
 
 
-@get_status.handle()
+@down_list_command.handle()
 async def handle_status(bot: Bot, event: Event, state: T_State):
     result = ""
     if event.message_type == 'group':
@@ -246,6 +247,13 @@ async def handle_status(bot: Bot, event: Event, state: T_State):
                 result += (f'[{value.group_id}-{value.title}]\n'
                            f'{value.details}\n\n')
     if result == "":
-        await get_status.finish("no running task")
+        await down_list_command.finish("no running task")
     else:
-        await get_status.finish(result)
+        await down_list_command.finish(result)
+
+
+@down_help_command.handle()
+async def handle_down_help(bot: Bot, event: Event, state: T_State):
+    await down_help_command.finish('down 指令\n\n'
+                                   'down [url] 下载\n'
+                                   'down list 获取下载任务列表')

@@ -203,7 +203,7 @@ async def got_get_group_id(bot: Bot, event: Event, state: T_State):
 
 @configer_help.handle()
 async def handle_configer_help(bot: Bot, event: Event, state: T_State):
-    await configer_help.finish('configer 指令\n'
+    await configer_help.finish('configer 指令\n\n'
                                'list 获取所有配置\n'
                                'get  查询配置\n'
                                'add 添加配置\n'
