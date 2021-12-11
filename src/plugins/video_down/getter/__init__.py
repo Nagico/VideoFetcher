@@ -20,7 +20,7 @@ status_config = Config(**global_config.dict())  # 获取nonebot配置
 
 down_command = on_command("down", priority=4)  # 下载命令
 down_list_command = on_command("down list", priority=3)  # 查看下载状态命令
-down_help_command = on_command("down help", priority=3)  # 查看下载状态命令
+down_help_command = on_command("down help", priority=3)
 
 export = nonebot.plugin.export()  # 导出插件
 video_get = nonebot.plugin.require('src.plugins.video_down')  # 获取插件
@@ -92,19 +92,47 @@ async def down_video(down_event: DownEvent) -> None:
         await inform(down_event, e.msg)
         return
     else:
-        await down_event.bot.send(
-            down_event.event,
-            f"Title: {info['title']}\n"
-            f"Platform: {info.get('extractor', '')}\n"
-            f"Date: {info.get('upload_date', '')}\n"
-            f"Author: {info.get('uploader', '').strip()}\n"
-            f"\n"
-            f"Url: {info.get('webpage_url', '')}\n"
-            f"Video: {down_event.file_name}\n"
-            f"Cover: {down_event.cover_name}\n"
-            f"====================\n"
-            f"[Description]\n"
-            f"{info.get('description', '')}\n"
+        msg1 = f"Title: {info['title']}\n" \
+               f"Platform: {info.get('extractor', '')}\n" \
+               f"Date: {info.get('upload_date', '')}\n" \
+               f"Author: {info.get('uploader', '').strip()}\n"
+        msg2 = f"Url: {info.get('webpage_url', '')}\n" \
+               f"Video: {down_event.file_name}\n" \
+               f"Cover: {down_event.cover_name}\n"
+        msg3 = f"[Description]\n" \
+               f"{info.get('description', '')}\n"
+
+        msg = [
+            {
+                "type": "node",
+                "data": {
+                    "name": "co2",
+                    "uin": f"{down_event.bot_qq}",
+                    "content": msg1
+                }
+            },
+            {
+                "type": "node",
+                "data": {
+                    "name": "co2",
+                    "uin": f"{down_event.bot_qq}",
+                    "content": msg2
+                }
+            },
+            {
+                "type": "node",
+                "data": {
+                    "name": "co2",
+                    "uin": f"{down_event.bot_qq}",
+                    "content": msg3
+                }
+            }
+        ]
+
+        await down_event.bot.call_api(
+            'send_group_forward_msg',
+            group_id=down_event.group_id,
+            messages=msg
         )
         os.remove(down_event.file_name)
         if down_event.cover_name != "":
@@ -139,7 +167,8 @@ async def _download_cover_task(down_event: DownEvent) -> None:
     except DownloadException as e:  # 下载失败
         down_event.cover_name = ""  # 封面名称为空
         logger.error(f"{down_event.group_id}-{down_event.title} cover-download error: {e}")
-        await down_event.bot.send(down_event.event, f"[{down_event.title}] Download cover failed\n\n{e}")  # 告知封面下载失败，继续任务
+        await down_event.bot.send(down_event.event,
+                                  f"[{down_event.title}] Download cover failed\n\n{e}")  # 告知封面下载失败，继续任务
 
 
 async def _upload_video_task(down_event: DownEvent) -> None:

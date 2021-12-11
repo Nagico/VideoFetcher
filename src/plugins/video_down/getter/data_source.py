@@ -165,7 +165,7 @@ class DownEvent(object):
         else:  # private
             self.group_id = status_config.default_group_id
 
-        config_data = self.configer.get_config(self.group_id)
+        config_data = self.configer.get_config_data(self.group_id)
         self.group_name = config_data['group_name']
         self.message_id = event.message_id
 
