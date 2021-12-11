@@ -164,6 +164,9 @@ class DownEvent(object):
             self.group_id = event.group_id
         else:  # private
             self.group_id = status_config.default_group_id
+
+        config_data = self.configer.get_config(self.group_id)
+        self.group_name = config_data['group_name']
         self.message_id = event.message_id
 
         self.you_getter = None
@@ -172,8 +175,8 @@ class DownEvent(object):
         self.title = ''
         self.details = 'init'
 
-        self.file_path = configer.get_config_data(self.group_id)['video_upload_path']
-        self.cover_path = configer.get_config_data(self.group_id)['cover_upload_path']
+        self.file_path = config_data['video_upload_path']
+        self.cover_path = config_data['cover_upload_path']
 
         self.create_time = time()
         self.finish_time = None
@@ -194,25 +197,7 @@ class DownEvent(object):
 
         return ''  # 未找到
 
-
-
-    # async def get_sub_folder_id(self, path_list: list, last_folder_id: int) -> str:
-    #     if len(path_list) == 0:  # 未找到目录
-    #         return ''  # 上传至根目录
-    #
-    #     if last_folder_id == 0:
-    #         res = await self.bot.call_api('get_group_root_files', group_id=self.group_id)  # 获取根目录
-    #     else:
-    #         res = await self.bot.call_api('get_group_files_by_folder', group_id=self.group_id, folder_id=last_folder_id)  # 获取子目录
-    #
-    #     for folder in res['folders']:
-    #         if folder['name'] == path_list[0]:  # 匹配目录名
-    #             if len(path_list) == 1:  # 当前目录已经是最后一层
-    #                 return folder['id']  # 返回目录id
-    #             else:  # 向下递归子目录
-    #                 return self.get_sub_folder_id(path_list[1:], folder['id'])
-
-    def __del__(self):
+    def destroy(self):
         DownEvent.event_list.pop(self.id)  # 在dict中删除信息
         if self.you_getter:
             del self.you_getter
