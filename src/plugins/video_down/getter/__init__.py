@@ -241,7 +241,7 @@ async def handle_status(bot: Bot, event: Event, state: T_State):
     else:
         for key, value in DownEvent.event_list.items():
             if value is not None:
-                result += (f'[{value.group_id}-{value.title}]\n'
+                result += (f'[{value.group_name}-{value.title}]\n'
                            f'{value.details}\n\n')
     if result == "":
         await down_list_command.finish("no running task")
