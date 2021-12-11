@@ -226,7 +226,7 @@ async def inform(down_event: DownEvent, result: str):
                 f'[{down_event.title}] {result}\n'
                 f'[CQ:at,qq={down_event.user_id}]'
     )
-    del down_event
+    down_event.destroy()  # 销毁下载事件
     await down_command.finish()
 
 
