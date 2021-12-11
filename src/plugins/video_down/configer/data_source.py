@@ -98,7 +98,7 @@ class Configer:
 
         :return: 是否存在
         """
-        return group_id in self.config_data
+        return str(group_id) in self.config_data
 
     def get_config_data(self, group_id=None) -> dict:
         """
@@ -150,7 +150,7 @@ class Configer:
 
         await self.save_config_file()
 
-    def delete_config_data(self, group_id):
+    async def delete_config_data(self, group_id):
         """
         删除配置
 
@@ -161,7 +161,7 @@ class Configer:
 
         if group_id in self.config_data:
             self.config_data.pop(group_id)
-            self.save_config_file()
+            await self.save_config_file()
 
     def get_subscribe_channel(self, group_id):
         """
