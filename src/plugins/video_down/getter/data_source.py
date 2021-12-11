@@ -4,7 +4,13 @@
 # @Time     : 2021/9/1 15:03
 # @Author   : NagisaCo
 from __future__ import unicode_literals
+
+from datetime import time
+
+from nonebot import get_driver
 from nonebot.log import logger
+from nonebot.typing import T_State
+from nonebot.adapters import Bot, Event
 import youtube_dl
 from youtube_dl.utils import UnavailableVideoError, MaxDownloadsReached
 import asyncio
@@ -14,8 +20,18 @@ import aiohttp
 import aiofiles
 import re
 
+from src.plugins.video_down.configer import Configer
+from src.plugins.video_down.exception import DownloadException
+from .config import Config
 
-class YouGetter(object):
+global_config = get_driver().config
+status_config = Config(**global_config.dict())  # 获取nonebot配置
+
+
+class VideoGetter(object):
+    """
+    视频下载器
+    """
     def __init__(self, url: str, proxy: str = ""):
         self.ydl = None
         self.url = url
@@ -29,6 +45,9 @@ class YouGetter(object):
         self.ydl.__exit__()
 
     class YouGetterLogger(object):
+        """
+        自定义日志类
+        """
         @staticmethod
         def debug(msg):
             logger.info(msg)
@@ -83,7 +102,6 @@ class YouGetter(object):
 
     async def download_video(self) -> str:
         try:
-            # It also downloads the videos
             loop = asyncio.get_event_loop()
 
             await loop.run_in_executor(
@@ -124,13 +142,84 @@ class YouGetter(object):
             raise DownloadException(e)
 
 
-class DownloadException(Exception):
-    def __init__(self, Msg):
-        self.Msg = Msg
+class DownEvent(object):
+    """
+    下载任务事件信息
+    """
+    event_list = {}
+    event_cnt = 0
+
+    def __init__(self, bot: Bot, event: Event, state: T_State, configer: Configer):
+        DownEvent.event_cnt += 1
+        self.id = DownEvent.event_cnt
+        self.bot = bot
+        self.event = event
+        self.state = state
+        self.configer = configer
+
+        self.url = state['url']
+        self.bot_qq = bot.self_id
+        self.user_id = event.get_user_id()
+        if event.message_type == 'group':
+            self.group_id = event.group_id
+        else:  # private
+            self.group_id = status_config.default_group_id
+        self.message_id = event.message_id
+
+        self.you_getter = None
+        self.file_name = ''
+        self.cover_name = ''
+        self.title = ''
+        self.details = 'init'
+
+        self.file_path = configer.get_config_data(self.group_id)['video_upload_path']
+        self.cover_path = configer.get_config_data(self.group_id)['cover_upload_path']
+
+        self.create_time = time()
+        self.finish_time = None
+
+        DownEvent.event_list[self.id] = self  # 在列表中添加信息
+
+    async def get_folder_id(self, path: str) -> str:
+        if path == '':
+            return ''
+
+        if path[0] == '/':  # 处理/开头的路径
+            path = path[1:]
+
+        res = await self.bot.call_api('get_group_root_files', group_id=self.group_id)  # 获取根目录
+        for folder in res['folders']:
+            if folder['folder_name'] == path:  # 匹配目录名
+                return folder['folder_id']  # 返回目录id
+
+        return ''  # 未找到
+
+
+
+    # async def get_sub_folder_id(self, path_list: list, last_folder_id: int) -> str:
+    #     if len(path_list) == 0:  # 未找到目录
+    #         return ''  # 上传至根目录
+    #
+    #     if last_folder_id == 0:
+    #         res = await self.bot.call_api('get_group_root_files', group_id=self.group_id)  # 获取根目录
+    #     else:
+    #         res = await self.bot.call_api('get_group_files_by_folder', group_id=self.group_id, folder_id=last_folder_id)  # 获取子目录
+    #
+    #     for folder in res['folders']:
+    #         if folder['name'] == path_list[0]:  # 匹配目录名
+    #             if len(path_list) == 1:  # 当前目录已经是最后一层
+    #                 return folder['id']  # 返回目录id
+    #             else:  # 向下递归子目录
+    #                 return self.get_sub_folder_id(path_list[1:], folder['id'])
+
+    def __del__(self):
+        DownEvent.event_list.pop(self.id)  # 在dict中删除信息
+        if self.you_getter:
+            del self.you_getter
 
 
 if __name__ == "__main__":
-    you = YouGetter('https://www.youtube.com/watch?v=GgRjQcZfxqQ')
+    you = VideoGetter('https://www.youtube.com/watch?v=GgRjQcZfxqQ')
     done = asyncio.run(you.get_info())
 
     print(done)

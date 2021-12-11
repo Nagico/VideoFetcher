@@ -9,7 +9,7 @@ from typing import Dict, Any
 
 class Config(BaseSettings):
     # Your Config Here
-    video_get_getter_status: Dict[str, Any] = {}
+    default_group_id: int = 0
 
     class Config:
         extra = "ignore"
