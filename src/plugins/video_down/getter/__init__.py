@@ -7,6 +7,7 @@ import os
 import validators
 import nonebot.exception
 from nonebot import get_driver, on_command
+from nonebot.params import State
 from nonebot.typing import T_State
 from nonebot.log import logger
 from nonebot.adapters import Bot, Event
@@ -28,7 +29,7 @@ configer = nonebot.plugin.require('src.plugins.video_down.configer').configer  #
 
 
 @down_command.handle()
-async def handle_download(bot: Bot, event: Event, state: T_State):
+async def handle_download(bot: Bot, event: Event, state: T_State = State()) -> None:
     """
     处理下载任务
     """
@@ -263,7 +264,7 @@ async def inform(down_event: DownEvent, result: str):
 
 
 @down_list_command.handle()
-async def handle_status(bot: Bot, event: Event, state: T_State):
+async def handle_status(bot: Bot, event: Event, state: T_State = State()):
     result = ""
     if event.message_type == 'group':
         for key, value in DownEvent.event_list.items():
@@ -282,7 +283,7 @@ async def handle_status(bot: Bot, event: Event, state: T_State):
 
 
 @down_help_command.handle()
-async def handle_down_help(bot: Bot, event: Event, state: T_State):
+async def handle_down_help(bot: Bot, event: Event, state: T_State = State()):
     await down_help_command.finish('down 指令\n\n'
                                    'down [url] 下载\n'
                                    'down list 获取下载任务列表')

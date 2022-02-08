@@ -1,8 +1,10 @@
 import json
 import os
 from nonebot import get_driver, plugin, on_command
+from nonebot.matcher import Matcher
+from nonebot.params import CommandArg, State
 from nonebot.typing import T_State
-from nonebot.adapters import Bot, Event
+from nonebot.adapters import Bot, Event, Message
 from nonebot.permission import SUPERUSER
 
 from .config import Config
@@ -26,36 +28,36 @@ configer_help = on_command("configer help", permission=SUPERUSER, priority=2)
 
 
 @configer_add.handle()
-async def handle_configer_add(bot: Bot, event: Event, state: T_State):
-    args = str(event.get_message()).strip()  # 首次发送命令时跟随的参数 群号
+async def handle_configer_add(matcher: Matcher, args: Message = CommandArg()):
+    args = str(args.extract_plain_text()).strip()  # 首次发送命令时跟随的参数 群号
     if args:
-        state["group_id"] = args  # 如果用户发送了参数则直接赋值
+        matcher.set_arg("group_id", args)
 
 
 @configer_add.got("group_id", prompt="请输入要添加的群号")
-async def got_add_group_id(bot: Bot, event: Event, state: T_State):
+async def got_add_group_id(bot: Bot, event: Event, state: T_State = State()):
     if type(eval(str(event.get_message()).strip())) != int:
         await configer_add.reject('请输入正确的群号')
     state["group_id"] = int(str(event.get_message()).strip())
 
 
 @configer_add.got("group_name", prompt="请输入群名")
-async def got_add_group_name(bot: Bot, event: Event, state: T_State):
+async def got_add_group_name(bot: Bot, event: Event, state: T_State = State()):
     state["group_name"] = str(event.get_message()).strip()
 
 
 @configer_add.got("video_upload_path", prompt="请输入视频上传路径, / 代表根目录")
-async def got_add_video_upload_path(bot: Bot, event: Event, state: T_State):
+async def got_add_video_upload_path(bot: Bot, event: Event, state: T_State = State()):
     state["video_upload_path"] = str(event.get_message()).strip()
 
 
 @configer_add.got("cover_upload_path", prompt="请输入封面上传路径, / 代表根目录")
-async def got_add_cover_upload_path(bot: Bot, event: Event, state: T_State):
+async def got_add_cover_upload_path(bot: Bot, event: Event, state: T_State = State()):
     state["cover_upload_path"] = str(event.get_message()).strip()
 
 
 @configer_add.got("enable_subscribe", prompt="请输入是否开启订阅,True or False")
-async def got_add_enable_subscribe(bot: Bot, event: Event, state: T_State):
+async def got_add_enable_subscribe(bot: Bot, event: Event, state: T_State = State()):
     state["enable_subscribe"] = True if str(event.get_message()).strip().lower() == 'true' else False
 
     await configer_add.send(f'当前添加的配置为:\n'
@@ -67,7 +69,7 @@ async def got_add_enable_subscribe(bot: Bot, event: Event, state: T_State):
 
 
 @configer_add.got("confirm", prompt="请输入是否确认添加,True or False")
-async def got_add_confirm(bot: Bot, event: Event, state: T_State):
+async def got_add_confirm(bot: Bot, event: Event, state: T_State = State()):
     state["confirm"] = True if str(event.get_message()).strip().lower() == 'true' else False
 
     if not state["confirm"]:
@@ -82,14 +84,14 @@ async def got_add_confirm(bot: Bot, event: Event, state: T_State):
 
 
 @configer_delete.handle()
-async def handle_configer_delete(bot: Bot, event: Event, state: T_State):
+async def handle_configer_delete(bot: Bot, event: Event, state: T_State = State()):
     args = str(event.get_message()).strip()  # 首次发送命令时跟随的参数 群号
     if args:
         state["group_id"] = args  # 如果用户发送了参数则直接赋值
 
 
 @configer_delete.got("group_id", prompt="请输入要删除的群号")
-async def got_delete_group_id(bot: Bot, event: Event, state: T_State):
+async def got_delete_group_id(bot: Bot, event: Event, state: T_State = State()):
     if type(eval(str(event.get_message()).strip())) != int:
         await configer_delete.reject('请输入正确的群号')
     state["group_id"] = int(str(event.get_message()).strip())
@@ -108,7 +110,7 @@ async def got_delete_group_id(bot: Bot, event: Event, state: T_State):
 
 
 @configer_delete.got("confirm", prompt="请输入是否确认删除,True or False")
-async def got_delete_confirm(bot: Bot, event: Event, state: T_State):
+async def got_delete_confirm(bot: Bot, event: Event, state: T_State = State()):
     state["confirm"] = True if str(event.get_message()).strip().lower() == 'true' else False
 
     if not state["confirm"]:
@@ -120,20 +122,20 @@ async def got_delete_confirm(bot: Bot, event: Event, state: T_State):
 
 
 @configer_list.handle()
-async def handle_configer_list(bot: Bot, event: Event, state: T_State):
+async def handle_configer_list(bot: Bot, event: Event, state: T_State = State()):
     config_data = configer.get_config_data()
     await configer_list.finish(json.dumps(config_data, ensure_ascii=False, indent=4))
 
 
 @configer_update.handle()
-async def handle_configer_update(bot: Bot, event: Event, state: T_State):
+async def handle_configer_update(bot: Bot, event: Event, state: T_State = State()):
     args = str(event.get_message()).strip()  # 首次发送命令时跟随的参数 群号
     if args:
         state["group_id"] = args  # 如果用户发送了参数则直接赋值
 
 
 @configer_update.got("group_id", prompt="请输入要更新的群号")
-async def got_add_group_id(bot: Bot, event: Event, state: T_State):
+async def got_add_group_id(bot: Bot, event: Event, state: T_State = State()):
     if type(eval(str(event.get_message()).strip())) != int:
         await configer_update.reject('请输入正确的群号')
     state["group_id"] = int(str(event.get_message()).strip())
@@ -152,7 +154,7 @@ async def got_add_group_id(bot: Bot, event: Event, state: T_State):
 
 
 @configer_update.got("key", prompt="请输入要更新的key")
-async def got_update_key(bot: Bot, event: Event, state: T_State):
+async def got_update_key(bot: Bot, event: Event, state: T_State = State()):
     state["key"] = str(event.get_message()).strip()
 
     if not state["key"] in ["group_name", "video_upload_path", "cover_upload_path", "enable_subscribe"]:
@@ -160,7 +162,7 @@ async def got_update_key(bot: Bot, event: Event, state: T_State):
 
 
 @configer_update.got("value", prompt="请输入新值")
-async def got_update_value(bot: Bot, event: Event, state: T_State):
+async def got_update_value(bot: Bot, event: Event, state: T_State = State()):
     state["value"] = str(event.get_message()).strip()
 
     if state["key"] == "enable_subscribe":
@@ -176,14 +178,14 @@ async def got_update_value(bot: Bot, event: Event, state: T_State):
 
 
 @configer_get.handle()
-async def handle_configer_get(bot: Bot, event: Event, state: T_State):
+async def handle_configer_get(bot: Bot, event: Event, state: T_State = State()):
     args = str(event.get_message()).strip()  # 首次发送命令时跟随的参数 群号
     if args:
         state["group_id"] = args  # 如果用户发送了参数则直接赋值
 
 
 @configer_get.got("group_id", prompt="请输入要查询的群号")
-async def got_get_group_id(bot: Bot, event: Event, state: T_State):
+async def got_get_group_id(bot: Bot, event: Event, state: T_State = State()):
     if type(eval(str(event.get_message()).strip())) != int:
         await configer_get.reject('请输入正确的群号')
     state["group_id"] = int(str(event.get_message()).strip())
@@ -202,7 +204,7 @@ async def got_get_group_id(bot: Bot, event: Event, state: T_State):
 
 
 @configer_help.handle()
-async def handle_configer_help(bot: Bot, event: Event, state: T_State):
+async def handle_configer_help(bot: Bot, event: Event, state: T_State = State()):
     await configer_help.finish('configer 指令\n\n'
                                'list 获取所有配置\n'
                                'get  查询配置\n'

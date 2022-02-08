@@ -10,8 +10,9 @@ python = "^3.7"
 nonebot2 = "^2.0.0.a1"
 nb-cli = "^0.1.0"
 
-[nonebot.plugins]
-plugins = ["nonebot_plugin_status", "nonebot_plugin_apscheduler", "src.plugins.video_down"]
+
+[tool.nonebot]
+plugins = []
 plugin_dirs = []
 
 [build-system]

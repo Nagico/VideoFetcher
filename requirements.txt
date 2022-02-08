@@ -4,6 +4,7 @@ yt_dlp
 aiofiles
 feedparser
 nb-cli
-nonebot-adapter-cqhttp
+nonebot-adapter-onebot
 nonebot-plugin-status
 nonebot-plugin-apscheduler
+validators
