@@ -11,8 +11,8 @@ from nonebot import get_driver
 from nonebot.log import logger
 from nonebot.typing import T_State
 from nonebot.adapters import Bot, Event
-import youtube_dl
-from youtube_dl.utils import UnavailableVideoError, MaxDownloadsReached
+from yt_dlp import YoutubeDL
+from yt_dlp.utils import UnavailableVideoError, MaxDownloadsReached
 import asyncio
 import functools
 import os
@@ -76,7 +76,7 @@ class VideoGetter(object):
         }
         if self.proxy != "":
             ydl_opts.update({'you_get_proxy': self.proxy})
-        self.ydl = youtube_dl.YoutubeDL(ydl_opts)
+        self.ydl = YoutubeDL(ydl_opts)
         self.ydl.__enter__()
         return func
 

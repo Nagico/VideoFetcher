@@ -1,6 +1,6 @@
 pydantic
 aiohttp
-youtube_dl
+yt_dlp
 aiofiles
 feedparser
 nb-cli
