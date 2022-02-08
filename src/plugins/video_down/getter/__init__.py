@@ -7,10 +7,10 @@ import os
 import validators
 import nonebot.exception
 from nonebot import get_driver, on_command
-from nonebot.params import State
+from nonebot.params import State, CommandArg, EventMessage
 from nonebot.typing import T_State
 from nonebot.log import logger
-from nonebot.adapters import Bot, Event
+from nonebot.adapters import Bot, Event, Message
 
 from .data_source import VideoGetter, DownEvent
 from .config import Config
@@ -29,11 +29,11 @@ configer = nonebot.plugin.require('src.plugins.video_down.configer').configer  #
 
 
 @down_command.handle()
-async def handle_download(bot: Bot, event: Event, state: T_State = State()) -> None:
+async def handle_download(bot: Bot, event: Event, state: T_State = State(), msg: Message = CommandArg()) -> None:
     """
     处理下载任务
     """
-    args = str(event.get_message()).strip()
+    args = msg.extract_plain_text().strip()
     if args:
         state["url"] = args
         url = state["url"]
