@@ -135,9 +135,12 @@ async def down_video(down_event: DownEvent) -> None:
         #     group_id=down_event.group_id,
         #     messages=msg
         # )
-        await down_event.bot.send(down_event.event, msg1)
-        await down_event.bot.send(down_event.event, msg2)
-        await down_event.bot.send(down_event.event, msg3)
+        try:
+            await down_event.bot.send(down_event.event, msg1)
+            await down_event.bot.send(down_event.event, msg2)
+            await down_event.bot.send(down_event.event, msg3)
+        except Exception:
+            pass
         os.remove(down_event.file_name)
         if down_event.cover_name != "":
             os.remove(down_event.cover_name)

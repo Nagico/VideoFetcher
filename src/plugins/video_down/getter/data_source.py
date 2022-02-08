@@ -91,6 +91,8 @@ class VideoGetter(object):
                     download=False
                 )
             )
+            if 'entries' in self.info:
+                self.info = self.info['entries'][0]
             self.filename = self.ydl.prepare_filename(self.info)
             self.covername = os.path.splitext(self.filename)[0]+os.path.splitext(re.sub(r'\?.*', '', self.info['thumbnail']))[-1]
             return self.info
