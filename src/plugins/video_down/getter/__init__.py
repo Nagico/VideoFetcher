@@ -102,38 +102,41 @@ async def down_video(down_event: DownEvent) -> None:
         msg3 = f"[Description]\n" \
                f"{info.get('description', '')}\n"
 
-        msg = [
-            {
-                "type": "node",
-                "data": {
-                    "name": "co2",
-                    "uin": f"{down_event.bot_qq}",
-                    "content": msg1
-                }
-            },
-            {
-                "type": "node",
-                "data": {
-                    "name": "co2",
-                    "uin": f"{down_event.bot_qq}",
-                    "content": msg2
-                }
-            },
-            {
-                "type": "node",
-                "data": {
-                    "name": "co2",
-                    "uin": f"{down_event.bot_qq}",
-                    "content": msg3
-                }
-            }
-        ]
+        # msg = [
+        #     {
+        #         "type": "node",
+        #         "data": {
+        #             "name": "co2",
+        #             "uin": f"{down_event.bot_qq}",
+        #             "content": msg1
+        #         }
+        #     },
+        #     {
+        #         "type": "node",
+        #         "data": {
+        #             "name": "co2",
+        #             "uin": f"{down_event.bot_qq}",
+        #             "content": msg2
+        #         }
+        #     },
+        #     {
+        #         "type": "node",
+        #         "data": {
+        #             "name": "co2",
+        #             "uin": f"{down_event.bot_qq}",
+        #             "content": msg3
+        #         }
+        #     }
+        # ]
 
-        await down_event.bot.call_api(
-            'send_group_forward_msg',
-            group_id=down_event.group_id,
-            messages=msg
-        )
+        # await down_event.bot.call_api(
+        #     'send_group_forward_msg',
+        #     group_id=down_event.group_id,
+        #     messages=msg
+        # )
+        await down_event.bot.send(down_event.event, msg1)
+        await down_event.bot.send(down_event.event, msg2)
+        await down_event.bot.send(down_event.event, msg3)
         os.remove(down_event.file_name)
         if down_event.cover_name != "":
             os.remove(down_event.cover_name)
