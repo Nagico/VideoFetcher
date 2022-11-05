@@ -53,6 +53,7 @@ async def down_video(down_event: DownEvent) -> None:
     await down_event.bot.send(down_event.event, f"got url\n{down_event.url}")
 
     down_event.proxy = video_get.check_proxy(down_event.url)
+
     down_event.you_getter = VideoGetter(down_event.url, down_event.proxy)
 
     @down_event.you_getter.register_callback

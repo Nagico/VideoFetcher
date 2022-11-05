@@ -27,15 +27,11 @@ driver.register_adapter(Adapter)
 # driver.register_adapter("mirai", MIRAIBot)
 
 nonebot.load_plugin("src.plugins.video_down")
-nonebot.load_from_toml("pyproject.toml")
 
 # Modify some config / config depends on loaded configs
 # 
 # config = driver.config
 # do something...
 
+nonebot.run()
 
-if __name__ == "__main__":
-    nonebot.logger.warning("Always use `nb run` to start the bot instead of manually running!")
-    nonebot.run(app="bot:app")
-    # nonebot.run(app="__mp_main__:app")
