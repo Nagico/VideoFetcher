@@ -27,7 +27,6 @@ driver.register_adapter(Adapter)
 # driver.register_adapter("mirai", MIRAIBot)
 
 nonebot.load_plugin("src.plugins.video_down")
-nonebot.load_plugin("src.plugins.status")
 nonebot.load_from_toml("pyproject.toml")
 
 # Modify some config / config depends on loaded configs
