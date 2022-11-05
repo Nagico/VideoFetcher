@@ -7,7 +7,7 @@ import os
 import validators
 import nonebot.exception
 from nonebot import get_driver, on_command
-from nonebot.params import State, CommandArg, EventMessage
+from nonebot.params import CommandArg, EventMessage
 from nonebot.typing import T_State
 from nonebot.log import logger
 from nonebot.adapters import Bot, Event, Message
@@ -23,13 +23,12 @@ down_command = on_command("down", priority=4)  # 下载命令
 down_list_command = on_command("down list", priority=3)  # 查看下载状态命令
 down_help_command = on_command("down help", priority=3)
 
-export = nonebot.plugin.export()  # 导出插件
 video_get = nonebot.plugin.require('src.plugins.video_down')  # 获取插件
 configer = nonebot.plugin.require('src.plugins.video_down.configer').configer  # 获取配置插件
 
 
 @down_command.handle()
-async def handle_download(bot: Bot, event: Event, state: T_State = State(), msg: Message = CommandArg()) -> None:
+async def handle_download(bot: Bot, event: Event, state: T_State, msg: Message = CommandArg()) -> None:
     """
     处理下载任务
     """
@@ -50,7 +49,6 @@ async def handle_download(bot: Bot, event: Event, state: T_State = State(), msg:
     pass
 
 
-@export
 async def down_video(down_event: DownEvent) -> None:
     await down_event.bot.send(down_event.event, f"got url\n{down_event.url}")
 
@@ -267,7 +265,7 @@ async def inform(down_event: DownEvent, result: str):
 
 
 @down_list_command.handle()
-async def handle_status(bot: Bot, event: Event, state: T_State = State()):
+async def handle_status(bot: Bot, event: Event, state: T_State):
     result = ""
     if event.message_type == 'group':
         for key, value in DownEvent.event_list.items():
@@ -286,7 +284,7 @@ async def handle_status(bot: Bot, event: Event, state: T_State = State()):
 
 
 @down_help_command.handle()
-async def handle_down_help(bot: Bot, event: Event, state: T_State = State()):
+async def handle_down_help(bot: Bot, event: Event, state: T_State):
     await down_help_command.finish('down 指令\n\n'
                                    'down [url] 下载\n'
                                    'down list 获取下载任务列表')
